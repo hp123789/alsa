@@ -24,14 +24,14 @@ int main (int argc, char **argv) {
             redisReply *data = reply->element[0]->element[1]->element[0]->element[1]->element[3];
             size_t dataSize = data->len;
             pcmData = (float *)data->str;
-            for (int j=0;j<dataSize;j++) {
-                // pcmData[j] = (pcmData[j]/(float)50000);
-                // if (pcmData[j] > 1) {
-                //     pcmData[j] = (float)1;
-                // }
-                // if (pcmData[j] < -1) {
-                //     pcmData[j] = (float)-1;
-                // }
+            for (int j=0;j<sizeof(pcmData)/sizeof(*pcmData);j++) {
+                 pcmData[j] = (pcmData[j]/(float)50000);
+                 if (pcmData[j] > 1) {
+                     pcmData[j] = (float)1;
+                 }
+                 if (pcmData[j] < -1) {
+                     pcmData[j] = (float)-1;
+                 }
                 printf("%f,", pcmData[j]);
             }
             printf("\n");
