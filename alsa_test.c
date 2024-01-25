@@ -54,23 +54,24 @@ int main (int argc, char **argv) {
     /* PINGs */
     // reply = redisCommand(c,"PING %s", "Hello World");
     while (1) {
-        reply = redisCommand(c, "XREAD BLOCK 1 COUNT 10 STREAMS audio $");
+        reply = redisCommand(c, "XREAD BLOCK 0 COUNT 1 STREAMS audio $");
         size_t dataReply = reply->elements;
         if (dataReply == 1) {
             redisReply *data = reply->element[0]->element[1]->element[0]->element[1]->element[3];
             size_t dataSize = data->len;
             pcmData = (float *)data->str;
-            for (int j=0;j<sizeof(pcmData)/sizeof(*pcmData);j++) {
-                pcmData[j] = (pcmData[j]/(float)50000);
-                if (pcmData[j] > 1) {
-                    pcmData[j] = (float)1;
-                }
-                if (pcmData[j] < -1) {
-                    pcmData[j] = (float)-1;
-                }
-                // printf("%f,", pcmData[j]);
-            }
-            snd_pcm_writei(handle, pcmData, CHUNK_SIZE);
+            int nFloats = dataSize / sizeof(float);
+            // for (int j=0;j<sizeof(pcmData)/sizeof(*pcmData);j++) {
+            //     pcmData[j] = (pcmData[j]/(float)50000);
+            //     if (pcmData[j] > 1) {
+            //         pcmData[j] = (float)1;
+            //     }
+            //     if (pcmData[j] < -1) {
+            //         pcmData[j] = (float)-1;
+            //     }
+            //     // printf("%f,", pcmData[j]);
+            // }
+            snd_pcm_writei(handle, pcmData, nFloats);
             // printf("\n");
             freeReplyObject(reply);
         }
