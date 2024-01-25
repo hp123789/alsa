@@ -41,7 +41,7 @@ int main (int argc, char **argv) {
 
     snd_pcm_t *handle;
     int err = snd_pcm_open(&handle, "default", SND_PCM_STREAM_PLAYBACK, 0);
-    snd_pcm_set_params(handle, SND_PCM_FORMAT_FLOAT_LE, SND_PCM_ACCESS_RW_INTERLEAVED, 1, FS, 0, 12000);
+    snd_pcm_set_params(handle, SND_PCM_FORMAT_FLOAT_LE, SND_PCM_ACCESS_RW_INTERLEAVED, 1, FS, 0, 10500);
 
     setVolume(10);
 
@@ -69,8 +69,6 @@ int main (int argc, char **argv) {
             //     if (pcmData[j] < -1) {
             //         pcmData[j] = (float)-1;
             //     }
-            //     // printf("%f,", pcmData[j]);
-            // }
             err = snd_pcm_writei(handle, pcmData, nFloats);
             if (err > 0) {
                 printf("Write %c frames\n", err);
@@ -79,7 +77,6 @@ int main (int argc, char **argv) {
                 snd_pcm_recover(handle, err, 0);
                 continue;
             }
-            // printf("\n");
             freeReplyObject(reply);
         }
     }
