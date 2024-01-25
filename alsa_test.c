@@ -40,10 +40,10 @@ int main (int argc, char **argv) {
     nice(-20);
 
     snd_pcm_t *handle;
-    snd_pcm_open(&handle, "default", SND_PCM_STREAM_PLAYBACK, 0);
-    snd_pcm_set_params(handle, SND_PCM_FORMAT_FLOAT_LE, SND_PCM_ACCESS_RW_INTERLEAVED, 1, FS, 0, 50000);
+    int err = snd_pcm_open(&handle, "default", SND_PCM_STREAM_PLAYBACK, 0);
+    snd_pcm_set_params(handle, SND_PCM_FORMAT_FLOAT_LE, SND_PCM_ACCESS_RW_INTERLEAVED, 1, FS, 0, 12000);
 
-    setVolume(15);
+    setVolume(10);
 
     c = redisConnect("192.168.150.2", 6379);
     if (c->err) {
@@ -71,7 +71,14 @@ int main (int argc, char **argv) {
             //     }
             //     // printf("%f,", pcmData[j]);
             // }
-            snd_pcm_writei(handle, pcmData, nFloats);
+            err = snd_pcm_writei(handle, pcmData, nFloats);
+            if (err > 0) {
+                printf("Write %c frames\n", err);
+            } else {
+                printf("Error write %s\n", snd_strerror(err));
+                snd_pcm_recover(handle, err, 0);
+                continue;
+            }
             // printf("\n");
             freeReplyObject(reply);
         }
