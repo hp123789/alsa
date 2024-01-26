@@ -69,6 +69,7 @@ int main (int argc, char **argv) {
             //     if (pcmData[j] < -1) {
             //         pcmData[j] = (float)-1;
             //     }
+            snd_pcm_nonblock(handle, 0);
             err = snd_pcm_writei(handle, pcmData, nFloats);
             if (err > 0) {
                 printf("Write %c frames\n", err);
