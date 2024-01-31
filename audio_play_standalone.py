@@ -125,9 +125,9 @@ class AudioPlayer(StandaloneBrandNode):
         signal.signal(signal.SIGINT, self.terminate)
     
     def parameter_initialization(self):
-        self.input_stream              = 'pred_audio'
-        self.task_state_default        = -1
-        self.audio_fs                  = 16000
+        self.input_stream              = 'audio'
+        self.task_state_default        = 1
+        self.audio_fs                  = 30000
         self.interval                  = 0.01
         self.audio_buffer_scaler       = 1
         self.norm_factor               = 50000
