@@ -1,5 +1,5 @@
 import numpy as np
-import pyaudio
+import alsaaudio
 import signal
 import logging
 import sys
@@ -137,30 +137,37 @@ class AudioPlayer(StandaloneBrandNode):
 
     def initialise_audio_player(self):  
         
-        # Initialise pyaudio
-        self.aud_p = pyaudio.PyAudio()
+        # # Initialise pyaudio
+        # self.aud_p = pyaudio.PyAudio()
 
-        # Print list of available audio devices
-        for i in range(self.aud_p.get_device_count()):
-            dev = self.aud_p.get_device_info_by_index(i)
-            print((i,dev['name'],dev['maxInputChannels']))
+        # # Print list of available audio devices
+        # for i in range(self.aud_p.get_device_count()):
+        #     dev = self.aud_p.get_device_info_by_index(i)
+        #     print((i,dev['name'],dev['maxInputChannels']))
 
-        self.audio_stream = self.aud_p.open(format=pyaudio.paFloat32, 
-                                            channels=self.n_channels, 
-                                            rate=self.audio_fs, 
-                                            output=True,
-                                            frames_per_buffer=self.chunk_size * self.audio_buffer_scaler,
-                                            )
+        # self.audio_stream = self.aud_p.open(format=pyaudio.paFloat32, 
+        #                                     channels=self.n_channels, 
+        #                                     rate=self.audio_fs, 
+        #                                     output=True,
+        #                                     frames_per_buffer=self.chunk_size * self.audio_buffer_scaler,
+        #                                     )
+        
+        device = 'default'
+
+        self.audio_stream = alsaaudio.PCM(alsaaudio.PCM_PLAYBACK, channels=self.n_channels, rate=self.audio_fs, format=alsaaudio.PCM_FORMAT_FLOAT_LE, periodsize=self.chunk_size * self.audio_buffer_scaler, device=device)
     
     def close_audio_player(self):
         # Close pyAudio player
-        self.audio_stream.stop_stream()
+        # self.audio_stream.stop_stream()
         self.audio_stream.close()
-        self.aud_p.terminate()
+        # self.aud_p.terminate()
 
     def work(self):
         # the writable audio buffer size
-        audio_buffer_free = self.audio_stream.get_write_available()
+        # audio_buffer_free = self.audio_stream.get_write_available()
+        audio_buffer_free = self.audio_stream.htimestamp()[2]
+        # audio_buffer_free = self.audio_stream.info("buffer_size")
+        # audio_buffer_free = self.audio_stream.info()["buffer_size"]
 
         # get the task state [-1=INITIALIZING, 0=START, 1=GO, 3=END, 4=PAUSED]
         try:
